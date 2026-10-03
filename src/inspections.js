@@ -1,7 +1,19 @@
+const defaultSchema = { id: "routine-check", name: "Ronda de equipamento", fields: [{ id: "seal", label: "Integridade do selo", type: "select", options: ["Conforme", "Desvio", "Não verificado"] }, { id: "vibration", label: "Vibração observada", type: "number", options: [] }, { id: "notes", label: "Observações", type: "textarea", options: [] }] };
+function normalizeSchema(raw) {
+  if (!raw || typeof raw !== "object" || !Array.isArray(raw.fields)) return defaultSchema;
+  const fields = raw.fields.slice(0, 30).filter(f => f && typeof f === "object").map((f, i) => ({
+    id: typeof f.id === "string" && /^[a-z0-9_-]{1,48}$/i.test(f.id) ? f.id : `field_${i}`,
+    label: typeof f.label === "string" ? f.label.slice(0, 80) : `Campo ${i+1}`,
+    type: ["text", "number", "textarea", "select"].includes(f.type) ? f.type : "text",
+    options: Array.isArray(f.options) ? f.options.filter(x => typeof x === "string").slice(0, 20).map(x => x.slice(0, 80)) : []
+  }));
+  return { id: typeof raw.id === "string" && /^[a-z0-9_-]{1,48}$/i.test(raw.id) ? raw.id : "field-form", name: typeof raw.name === "string" ? raw.name.slice(0, 80) : "Inspeção", fields };
+}
+let schema;
+try { schema = normalizeSchema(JSON.parse(localStorage.getItem("inspection-schema") || "null")); } catch { schema = defaultSchema; }
 const $ = (id) => document.getElementById(id);
 const dbName = "offshore-inspections";
 const storeName = "queue";
-let schema = JSON.parse(localStorage.getItem("inspection-schema") || JSON.stringify({ id: "routine-check", name: "Ronda de equipamento", fields: [{ id: "seal", label: "Integridade do selo", type: "select", options: ["Conforme", "Desvio", "Não verificado"] }, { id: "vibration", label: "Vibração observada", type: "number", options: [] }, { id: "notes", label: "Observações", type: "textarea", options: [] }] }));
 let db;
 
 function openDb() {
@@ -48,7 +60,7 @@ async function sync() {
 $("builder").addEventListener("submit",event=>{event.preventDefault();schema.name=$("formName").value.trim();localStorage.setItem("inspection-schema",JSON.stringify(schema));render();});
 $("addField").addEventListener("click",()=>{schema.fields.push({id:`field_${crypto.randomUUID().slice(0,8)}`,label:"Novo campo",type:"text",options:[]});render();});
 $("exportForm").addEventListener("click",()=>{const file=new Blob([JSON.stringify(schema,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=`${schema.id}.json`;a.click();URL.revokeObjectURL(a.href);});
-$("importForm").addEventListener("change",async event=>{try{schema=JSON.parse(await event.target.files[0].text());if(!Array.isArray(schema.fields))throw Error();render();}catch{$("inspectionMessage").textContent="Configuração JSON inválida."; }});
+$("importForm").addEventListener("change",async event=>{try{schema=normalizeSchema(JSON.parse(await event.target.files[0].text()));render();}catch{$("inspectionMessage").textContent="Configuração JSON inválida."; }});
 $("queueRecord").addEventListener("click",async()=>{const answers={};document.querySelectorAll("[data-answer]").forEach(el=>answers[el.dataset.answer]=el.value);const record={recordId:crypto.randomUUID(),formId:schema.id,assetTag:$("assetTag").value.trim().toUpperCase(),answers,capturedAt:new Date().toISOString()};if(!record.assetTag){$("inspectionMessage").textContent="Informe a tag do ativo.";return;}await transaction("readwrite",store=>store.put(record));$("inspectionMessage").textContent="Inspeção gravada localmente.";await pending();});
 $("sync").addEventListener("click",sync);window.addEventListener("online",()=>{$("network").classList.add("online");$("networkText").textContent="Conectado";});window.addEventListener("offline",()=>{$("network").classList.remove("online");$("networkText").textContent="Offline";});
 db=await openDb();render();$("networkText").textContent=navigator.onLine?"Conectado":"Offline";if(navigator.onLine)$("network").classList.add("online");
