@@ -34,13 +34,14 @@ function transaction(mode, work) {
 }
 function render() {
   $("formName").value = schema.name;
-  $("fields").innerHTML = schema.fields.map((f, i) => `<div class="order"><label>Rótulo<input data-label="${i}" value="${esc(f.label)}"></label><label>Tipo<select data-type="${i}"><option ${f.type === "text" ? "selected" : ""}>text</option><option ${f.type === "number" ? "selected" : ""}>number</option><option ${f.type === "textarea" ? "selected" : ""}>textarea</option><option ${f.type === "select" ? "selected" : ""}>select</option></select></label><button type="button" data-remove="${i}" class="secondary">Remover</button></div>`).join("");
+  $("fields").innerHTML = schema.fields.map((f, i) => `<div class="order"><label>Rótulo<input data-label="${i}" value="${esc(f.label)}"></label><label>Tipo<select data-type="${i}"><option ${f.type === "text" ? "selected" : ""}>text</option><option ${f.type === "number" ? "selected" : ""}>number</option><option ${f.type === "textarea" ? "selected" : ""}>textarea</option><option ${f.type === "select" ? "selected" : ""}>select</option></select></label><label>Opções de seleção<input data-options="${i}" value="${esc((f.options || []).join(", "))}" placeholder="Conforme, Desvio, N/A"></label><button type="button" data-remove="${i}" class="secondary">Remover</button></div>`).join("");
   $("inspection").innerHTML = schema.fields.map((f) => f.type === "textarea"
     ? `<label>${esc(f.label)}<textarea data-answer="${f.id}" rows="3"></textarea></label>`
     : f.type === "select" ? `<label>${esc(f.label)}<select data-answer="${f.id}">${f.options.map(o => `<option>${esc(o)}</option>`).join("")}</select></label>`
     : `<label>${esc(f.label)}<input data-answer="${f.id}" type="${f.type}" ${f.type === "number" ? "step='any'" : ""}></label>`).join("");
   $("fields").querySelectorAll("[data-label]").forEach(el => el.addEventListener("change", () => schema.fields[el.dataset.label].label = el.value));
   $("fields").querySelectorAll("[data-type]").forEach(el => el.addEventListener("change", () => { schema.fields[el.dataset.type].type = el.value; render(); }));
+  $("fields").querySelectorAll("[data-options]").forEach(el => el.addEventListener("change", () => schema.fields[el.dataset.options].options = el.value.split(",").map(x => x.trim()).filter(Boolean).slice(0, 20)));
   $("fields").querySelectorAll("[data-remove]").forEach(el => el.addEventListener("click", () => { schema.fields.splice(Number(el.dataset.remove),1); render(); }));
   pending();
 }
