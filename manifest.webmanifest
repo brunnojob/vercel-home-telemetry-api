@@ -1,0 +1,8 @@
+{
+  "name": "Brunno Dev Offshore Operations",
+  "short_name": "Brunno Ops",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07111c",
+  "theme_color": "#0a1420"
+}
