@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Inspeções low-code | Brunno Dev</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+  <header class="topbar"><a class="brand" href="/">BRUNNO<span>DEV</span></a><nav><a href="/">Visão da planta</a></nav></header>
+  <main>
+    <section class="hero"><div><p class="eyebrow">LOW-CODE · OFFSHORE</p><h1>Inspeção configurável</h1><p>Monte campos de inspeção, colete offline e sincronize ao recuperar a conexão.</p></div><div class="connection"><span id="network" class="dot"></span><span id="networkText">Aguardando</span></div></section>
+    <section class="grid">
+      <article class="panel"><p class="eyebrow">FORM BUILDER</p><h2>Definição do formulário</h2><form id="builder"><label>Nome<input id="formName" value="Ronda de equipamento"></label><div id="fields"></div><div class="actions"><button id="addField" type="button">Adicionar campo</button><button type="submit">Salvar formulário</button></div></form><button id="exportForm" class="secondary">Exportar configuração JSON</button><label class="file-label">Importar configuração<input id="importForm" type="file" accept="application/json"></label></article>
+      <article class="panel"><p class="eyebrow">COLETA DE CAMPO</p><h2>Nova inspeção</h2><label>Token do operador<input id="adminToken" type="password" autocomplete="off"></label><label>Tag do ativo<input id="assetTag" placeholder="PUMP-101"></label><form id="inspection"></form><button id="queueRecord">Salvar inspeção offline</button><p class="muted">Registros pendentes: <strong id="pending">0</strong></p><button id="sync" class="secondary">Sincronizar fila</button><p id="inspectionMessage" role="status" class="message"></p></article>
+    </section>
+  </main>
+  <footer>Project by <a href="https://brunnodev.store">Brunno Dev</a></footer>
+  <script type="module" src="/src/inspections.js"></script>
+</body>
+</html>
