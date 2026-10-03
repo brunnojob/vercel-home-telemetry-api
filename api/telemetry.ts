@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
@@ -9,9 +10,13 @@ type Payload = {
   eventAt?: unknown;
 };
 
-function authorized(req: VercelRequest): boolean {
-  const token = process.env.DEVICE_TOKEN;
-  return Boolean(token && req.headers.authorization === `Bearer ${token}`);
+function authorized(req: VercelRequest, envName: string): boolean {
+  const expected = process.env[envName];
+  const header = req.headers.authorization;
+  if (!expected || typeof header !== "string" || !header.startsWith("Bearer ")) return false;
+  const supplied = Buffer.from(header.slice(7));
+  const actual = Buffer.from(expected);
+  return supplied.length === actual.length && timingSafeEqual(supplied, actual);
 }
 
 function validNumber(value: unknown, min: number, max: number): value is number {
@@ -19,7 +24,9 @@ function validNumber(value: unknown, min: number, max: number): value is number 
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!authorized(req)) return res.status(401).json({ error: "unauthorized" });
+  const read = req.method === "GET";
+  if (!authorized(req, read ? "ADMIN_TOKEN" : "DEVICE_TOKEN"))
+    return res.status(401).json({ error: "unauthorized" });
   if (!process.env.DATABASE_URL) return res.status(503).json({ error: "database_unavailable" });
   const sql = neon(process.env.DATABASE_URL);
 
@@ -30,12 +37,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const temperature = body.temperatureC === undefined ? null : body.temperatureC;
     const humidity = body.humidityPct === undefined ? null : body.humidityPct;
     const moisture = body.soilMoisture === undefined ? null : body.soilMoisture;
+    if (temperature === null && humidity === null && moisture === null)
+      return res.status(400).json({ error: "measurement_required" });
     if ((temperature !== null && !validNumber(temperature, -40, 85)) ||
         (humidity !== null && !validNumber(humidity, 0, 100)) ||
         (moisture !== null && !validNumber(moisture, 0, 4095)))
       return res.status(400).json({ error: "measurement_out_of_range" });
-    const eventAt = typeof body.eventAt === "string" && Number.isFinite(Date.parse(body.eventAt))
-      ? new Date(body.eventAt).toISOString() : new Date().toISOString();
+    if (body.eventAt !== undefined &&
+        (typeof body.eventAt !== "string" || !Number.isFinite(Date.parse(body.eventAt))))
+      return res.status(400).json({ error: "invalid_event_at" });
+    const eventAt = typeof body.eventAt === "string" ? new Date(body.eventAt).toISOString() : new Date().toISOString();
     const rows = await sql`INSERT INTO device_telemetry (device_id, temperature_c, humidity_pct, soil_moisture, event_at)
       VALUES (${body.deviceId}, ${temperature}, ${humidity}, ${moisture}, ${eventAt})
       RETURNING id, device_id, temperature_c, humidity_pct, soil_moisture, event_at`;
