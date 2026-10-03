@@ -1,9 +1,20 @@
-# vercel-home-telemetry-api
+# offshore-scada-operations | Brunno Dev
 
-Vercel Node.js API for ESP32 household telemetry. `POST /api/telemetry` validates and stores readings in PostgreSQL through Neon. `GET /api/telemetry?deviceId=...&limit=100` reads bounded history with separate admin authorization.
+Full-stack operations workspace for field equipment and process signals. The Vercel Node.js API validates device telemetry, shows recent readings, manages work-order state transitions, and accepts idempotent inspection submissions. The browser dashboard shows readings and maintenance work; the low-code inspection page lets operators define field layouts, collect offline in IndexedDB, and synchronize records later.
 
-Set `DATABASE_URL`, `DEVICE_TOKEN` and `ADMIN_TOKEN` in Vercel environment variables. Apply `schema.sql`. Run `npm install`, `npm run typecheck`, and `npm run dev` locally after setting those values. Never commit secrets.
+## Stack
 
-POST requires `Authorization: Bearer $DEVICE_TOKEN` and JSON with a `deviceId` plus at least one of `temperatureC`, `humidityPct`, or `soilMoisture`. GET requires `$ADMIN_TOKEN`. Measurement ranges are validated before insert.
+- Vercel Functions with TypeScript
+- Neon PostgreSQL
+- HTML, CSS and browser JavaScript
+- ESP32 serial/telemetry prototypes in the companion repositories
 
-Project by [Brunno Dev](https://brunnodev.store).
+## Setup
+
+Configure `DATABASE_URL`, `DEVICE_TOKEN`, and `ADMIN_TOKEN` as Vercel environment variables. Apply `schema.sql` to the PostgreSQL database. Install dependencies with `npm install`, check types with `npm run typecheck`, and run locally with `npm run dev`.
+
+Open `/` for the SCADA-style dashboard and `/inspections.html` for the low-code inspection builder. The dashboard uses `ADMIN_TOKEN` only in memory in the active tab. `POST /api/telemetry` accepts device readings using `DEVICE_TOKEN`; `GET /api/operations` and work-order actions use `ADMIN_TOKEN`; `POST /api/inspections` syncs offline records with `ADMIN_TOKEN`. Do not put tokens in browser storage or source control.
+
+This is an operational prototype. Validate sensor calibration, alarm thresholds, network behavior and site-specific safety procedures before connecting it to live equipment. The software does not command safety-critical machinery.
+
+[brunnodev.store](https://brunnodev.store)
