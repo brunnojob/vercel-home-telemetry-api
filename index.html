@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a1420">
+  <title>Brunno Dev | Operações</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/">BRUNNO<span>DEV</span></a><nav><a href="#overview">Operação</a><a href="/inspections.html">Inspeções low-code</a></nav></header>
+  <main>
+    <section class="hero"><div><p class="eyebrow">SCADA · OPERAÇÕES</p><h1>Visão da planta</h1><p>Telemetria, alarmes operacionais e ordens de serviço em uma única tela.</p></div><div class="connection"><span id="connection" class="dot"></span><span id="connectionText">Desconectado</span></div></section>
+    <section id="login" class="panel login"><label for="token">Token de operador</label><input id="token" type="password" autocomplete="off" placeholder="ADMIN_TOKEN"><button id="connect">Conectar</button><small>O token fica somente na memória desta aba.</small></section>
+    <section id="overview" class="grid hidden">
+      <article class="panel span2"><div class="section-head"><div><p class="eyebrow">DADOS DE PROCESSO</p><h2>Últimas leituras</h2></div><button id="refresh">Atualizar</button></div><div class="table-wrap"><table><thead><tr><th>Ativo</th><th>°C</th><th>Umidade</th><th>Solo</th><th>Horário</th></tr></thead><tbody id="telemetry"></tbody></table></div></article>
+      <article class="panel"><p class="eyebrow">MANUTENÇÃO</p><h2>Abrir ordem</h2><form id="workForm"><label>Tag do ativo<input name="assetTag" required maxlength="32" placeholder="PUMP-101"></label><label>Prioridade<select name="priority"><option>low</option><option>medium</option><option>high</option><option>critical</option></select></label><label>Problema<input name="title" required minlength="4" maxlength="160"></label><button type="submit">Criar ordem</button></form></article>
+      <article class="panel span2"><p class="eyebrow">FILA DE TRABALHO</p><h2>Ordens de serviço</h2><div id="orders" class="orders"></div></article>
+    </section>
+    <p id="message" class="message" role="status"></p>
+  </main>
+  <footer>Operational prototype · <a href="https://brunnodev.store">brunnodev.store</a></footer>
+  <script type="module" src="/src/dashboard.js"></script>
+</body>
+</html>
