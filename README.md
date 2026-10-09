@@ -1,20 +1,37 @@
-# offshore-scada-operations | Brunno Dev
+# Operations Archive
 
-Full-stack operations workspace for field equipment and process signals. The Vercel Node.js API validates device telemetry, shows recent readings, manages work-order state transitions, and accepts idempotent inspection submissions. The browser dashboard shows readings and maintenance work; the low-code inspection page lets operators define field layouts, collect offline in IndexedDB, and synchronize records later. A service worker caches the app shell for field use without network access.
+API e interface para armazenar resultados de execução, telemetria, inspeções e ordens de serviço. PostgreSQL no Supabase, autenticação por usuário e Vercel Functions.
 
-## Stack
+## Executar
 
-- Vercel Functions with TypeScript
-- Neon PostgreSQL
-- HTML, CSS and browser JavaScript
-- ESP32 serial/telemetry prototypes in the companion repositories
+```sh
+npm ci
+npm test
+npm run typecheck
+npm run dev
+```
 
-## Setup
+Configure `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`. A chave de serviço não é necessária. As migrações versionadas estão em `supabase/migrations` e usam o prefixo `bd_`.
 
-Configure `DATABASE_URL`, `DEVICE_TOKEN`, and `ADMIN_TOKEN` as Vercel environment variables. Apply `schema.sql` to the PostgreSQL database. Install dependencies with `npm install`, check types with `npm run typecheck`, and run locally with `npm run dev`.
+## Fluxos
 
-Open `/` for the SCADA-style dashboard and `/inspections.html` for the low-code inspection builder. Install it to the device home screen for faster field access; inspection records remain queued in IndexedDB until an operator synchronizes them. The dashboard uses `ADMIN_TOKEN` only in memory in the active tab. `POST /api/telemetry` accepts device readings using `DEVICE_TOKEN`; `GET /api/operations` and work-order actions use `ADMIN_TOKEN`; `POST /api/inspections` syncs offline records with `ADMIN_TOKEN`. Do not put tokens in browser storage or source control.
+- `/laboratory.html`: cadastro, autenticação, importação de resultados e consulta por projeto.
+- `/`: telemetria e ordens de serviço.
+- `/inspections.html`: formulários de inspeção.
+- `POST /api/runs`: registra resultado e eventos numa transação, com chave de idempotência.
+- `GET /api/runs?project=nome`: retorna até 200 registros do usuário autenticado.
+- `/api/telemetry`, `/api/operations` e `/api/inspections`: validação, persistência e controle de propriedade.
 
-This is an operational prototype. Validate sensor calibration, alarm thresholds, network behavior and site-specific safety procedures before connecting it to live equipment. The software does not command safety-critical machinery.
+As políticas RLS isolam usuários. Resultados e eventos são imutáveis. Ordens de serviço têm transições controladas. Movimentos de estoque e lançamentos contábeis exigem revisão e atualizam seus saldos na mesma transação.
 
-[brunnodev.store](https://brunnodev.store)
+## Clientes nativos
+
+```sh
+python cloud/sync.py enqueue resultado.json --project c-household-budget
+python cloud/sync.py sync
+python -m unittest discover -s cloud
+```
+
+Defina `BRUNNODEV_ACCESS_TOKEN` com o token da sua sessão. `BRUNNODEV_API_URL` permite alterar o destino HTTPS. O cliente conserva relatórios numa fila SQLite até o servidor confirmar a persistência; tentativas repetidas não duplicam o registro.
+
+Nenhum registro de demonstração é inserido automaticamente. Sensores, pagamentos e modelos de visão dependem dos respectivos dispositivos e fornecedores.
