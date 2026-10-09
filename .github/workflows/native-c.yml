@@ -1,0 +1,9 @@
+name: Native C archive
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libcjson-dev libcurl4-openssl-dev libssl-dev
+      - run: make -C clients/c test
