@@ -1,0 +1,18 @@
+name: Native archive clients
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  ruby:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: ruby cloud/test_outbox.rb
+  swift:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: swiftc -parse-as-library cloud/ArchiveOutbox.swift -o /tmp/archive-client
+      - run: /tmp/archive-client --self-test
