@@ -60,7 +60,8 @@ actor ArchiveOutbox {
               let object = try JSONSerialization.jsonObject(with: result) as? [String: Any]
         else { throw ArchiveError.invalidInput }
         var payload: [String: Any] = ["project": project, "kind": "report", "result": object, "events": []]
-        let identifier = key ?? SHA256.hash(data: try encoded(payload)).map { String(format: "%02x", $0) }.joined()
+        let digest = SHA256.hash(data: try encoded(payload))
+        let identifier = key ?? digest.map { String(format: "%02x", $0) }.joined()
         guard !identifier.isEmpty, identifier.utf8.count <= 128 else { throw ArchiveError.invalidInput }
         payload["clientKey"] = identifier
         guard try encoded(payload).count <= 262144 else { throw ArchiveError.invalidInput }
