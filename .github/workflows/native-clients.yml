@@ -1,5 +1,9 @@
 name: Native archive clients
-on: [push, pull_request]
+run-name: Native archive clients · ${{ github.ref_name }} · ${{ github.sha }}
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
