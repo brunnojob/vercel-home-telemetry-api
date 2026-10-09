@@ -9,11 +9,23 @@ class OutboxTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             box = Outbox(Path(directory) / "outbox.db")
             key = box.enqueue("c-household-budget", "report", {"minor": 10})
-            self.assertEqual(key, box.enqueue("c-household-budget", "report", {"minor": 10}))
-            self.assertEqual(box.drain("https://example.com/api", "token", transport=lambda *args: 503)["pending"], 1)
+            self.assertEqual(
+                key, box.enqueue("c-household-budget", "report", {"minor": 10})
+            )
+            self.assertEqual(
+                box.drain(
+                    "https://example.com/api", "token", transport=lambda *args: 503
+                )["pending"],
+                1,
+            )
             box.db.execute("UPDATE outbox SET next_at=0")
             box.db.commit()
-            self.assertEqual(box.drain("https://example.com/api", "token", transport=lambda *args: 200)["pending"], 0)
+            self.assertEqual(
+                box.drain(
+                    "https://example.com/api", "token", transport=lambda *args: 200
+                )["pending"],
+                0,
+            )
             box.close()
 
     def test_conflicting_key_cannot_overwrite_a_report(self):
