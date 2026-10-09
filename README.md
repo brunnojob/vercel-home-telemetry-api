@@ -35,3 +35,7 @@ python -m unittest discover -s cloud
 Set `BRUNNODEV_ACCESS_TOKEN` to your session token. `BRUNNODEV_API_URL` selects an alternative HTTPS endpoint. The client retains reports in a SQLite queue until the server confirms persistence; retries do not duplicate records. Only a JSON object containing `"persisted": true` is accepted as confirmation. Other responses retain the report and schedule a retry.
 
 No demonstration records are inserted automatically. Sensors, payments, and vision models depend on their respective devices and providers.
+
+## License
+
+Original source and documentation are MIT licensed; see [LICENSE](LICENSE). Third-party dependencies and media retain their respective terms. Maintained by [Brunno Dev](https://brunnodev.store).
