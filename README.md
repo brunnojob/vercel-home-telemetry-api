@@ -1,8 +1,8 @@
 # Operations Archive
 
-API e interface para armazenar resultados de execução, telemetria, inspeções e ordens de serviço. PostgreSQL no Supabase, autenticação por usuário e Vercel Functions.
+An API and interface for storing execution results, telemetry, inspections, and work orders. It uses PostgreSQL on Supabase, per-user authentication, and Vercel Functions.
 
-## Executar
+## Run
 
 ```sh
 npm ci
@@ -11,27 +11,27 @@ npm run typecheck
 npm run dev
 ```
 
-Configure `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`. A chave de serviço não é necessária. As migrações versionadas estão em `supabase/migrations` e usam o prefixo `bd_`.
+Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. A service key is not required. Versioned migrations are in `supabase/migrations` and use the `bd_` prefix.
 
-## Fluxos
+## Workflows
 
-- `/laboratory.html`: cadastro, autenticação, importação de resultados e consulta por projeto.
-- `/`: telemetria e ordens de serviço.
-- `/inspections.html`: formulários de inspeção.
-- `POST /api/runs`: registra resultado e eventos numa transação, com chave de idempotência.
-- `GET /api/runs?project=nome`: retorna até 200 registros do usuário autenticado.
-- `/api/telemetry`, `/api/operations` e `/api/inspections`: validação, persistência e controle de propriedade.
+- `/laboratory.html`: registration, authentication, result imports, and queries by project.
+- `/`: telemetry and work orders.
+- `/inspections.html`: inspection forms.
+- `POST /api/runs`: records a result and its events in a transaction with an idempotency key.
+- `GET /api/runs?project=name`: returns up to 200 records owned by the authenticated user.
+- `/api/telemetry`, `/api/operations`, and `/api/inspections`: validation, persistence, and ownership checks.
 
-As políticas RLS isolam usuários. Resultados e eventos são imutáveis. Ordens de serviço têm transições controladas. Movimentos de estoque e lançamentos contábeis exigem revisão e atualizam seus saldos na mesma transação.
+RLS policies isolate users. Results and events are immutable. Work orders have controlled transitions. Inventory movements and accounting entries require a revision and update their balances in the same transaction.
 
-## Clientes nativos
+## Native clients
 
 ```sh
-python cloud/sync.py enqueue resultado.json --project c-household-budget
+python cloud/sync.py enqueue result.json --project c-household-budget
 python cloud/sync.py sync
 python -m unittest discover -s cloud
 ```
 
-Defina `BRUNNODEV_ACCESS_TOKEN` com o token da sua sessão. `BRUNNODEV_API_URL` permite alterar o destino HTTPS. O cliente conserva relatórios numa fila SQLite até o servidor confirmar a persistência; tentativas repetidas não duplicam o registro.
+Set `BRUNNODEV_ACCESS_TOKEN` to your session token. `BRUNNODEV_API_URL` selects an alternative HTTPS endpoint. The client retains reports in a SQLite queue until the server confirms persistence; retries do not duplicate records. Only a JSON object containing `"persisted": true` is accepted as confirmation. Other responses retain the report and schedule a retry.
 
-Nenhum registro de demonstração é inserido automaticamente. Sensores, pagamentos e modelos de visão dependem dos respectivos dispositivos e fornecedores.
+No demonstration records are inserted automatically. Sensors, payments, and vision models depend on their respective devices and providers.
