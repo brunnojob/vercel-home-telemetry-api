@@ -44,7 +44,7 @@ Original source and documentation are MIT licensed; see [LICENSE](LICENSE). Thir
 
 The [C17 archive client](clients/c/README.md) provides durable native report submission with file locking, content-derived idempotency keys, bounded HTTPS requests and exact receipt matching. Netlify functions expose the existing authenticated API; receipts include the submitted client key. The static build publishes only selected web assets. Run `node --test tests/*.test.mjs` and `make -C clients/c test`.
 
-Contribution trailer: `Co-authored-by: nyctophile <329826984+ineedfoundmyway@users.noreply.github.com>`.
+Contribution trailer: `Co-authored-by: nyctophile <33561761+ineedfoundmyway@users.noreply.github.com>`.
 
 ## Native archive clients
 
