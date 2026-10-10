@@ -1,21 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1014" viewBox="0 0 1100 1014">
-<rect width="1100" height="1014" rx="12" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1212" viewBox="0 0 1100 1212">
+<rect width="1100" height="1212" rx="12" fill="#0d1117"/>
 <title>Recorded program execution</title>
 <g font-family="monospace" font-size="16">
 <text x="24" y="36" fill="#c9d1d9">brunnojob/vercel-home-telemetry-api</text>
-<text x="24" y="58" fill="#c9d1d9">Executed: 2026-10-10T02:35:17.347074+00:00</text>
-<text x="24" y="80" fill="#c9d1d9">Source: 42d18164413d</text>
+<text x="24" y="58" fill="#c9d1d9">Executed: 2026-10-10T02:48:28.339282+00:00</text>
+<text x="24" y="80" fill="#c9d1d9">Source: 82264cfaf4a9</text>
 <text x="24" y="102" fill="#c9d1d9"></text>
 <text x="24" y="124" fill="#3fb950">PASS npm test</text>
 <text x="24" y="146" fill="#79c0ff">$ bash -e -o pipefail -c npm test</text>
 <text x="24" y="168" fill="#c9d1d9">&gt; vercel-home-telemetry-api@2.0.0 test</text>
 <text x="24" y="190" fill="#c9d1d9">&gt; node --test tests/*.test.mjs</text>
-<text x="24" y="212" fill="#c9d1d9">✔ Netlify preserves authentication denial and response headers (26.455026ms)</text>
-<text x="24" y="234" fill="#c9d1d9">✔ ambiguous query parameters never reach a handler (0.4888ms)</text>
-<text x="24" y="256" fill="#c9d1d9">✔ streamed body limits apply without Content-Length (2.30384ms)</text>
-<text x="24" y="278" fill="#c9d1d9">✔ malformed JSON and unsupported content are rejected (1.37247ms)</text>
-<text x="24" y="300" fill="#c9d1d9">✔ status, user token, query and parsed payload survive adaptation (1.304047ms)</text>
-<text x="24" y="322" fill="#c9d1d9">✔ passes parsed input and preserves endpoint status and headers (23.783577ms)</text>
+<text x="24" y="212" fill="#c9d1d9">✔ Netlify preserves authentication denial and response headers (51.531926ms)</text>
+<text x="24" y="234" fill="#c9d1d9">✔ ambiguous query parameters never reach a handler (0.738311ms)</text>
+<text x="24" y="256" fill="#c9d1d9">✔ streamed body limits apply without Content-Length (3.623842ms)</text>
+<text x="24" y="278" fill="#c9d1d9">✔ malformed JSON and unsupported content are rejected (2.128814ms)</text>
+<text x="24" y="300" fill="#c9d1d9">✔ status, user token, query and parsed payload survive adaptation (1.959918ms)</text>
+<text x="24" y="322" fill="#c9d1d9">✔ passes parsed input and preserves endpoint status and headers (47.348136ms)</text>
 <text x="24" y="344" fill="#c9d1d9">Full output: evidence.json</text>
 <text x="24" y="366" fill="#c9d1d9"></text>
 <text x="24" y="388" fill="#3fb950">PASS npm run typecheck</text>
@@ -38,12 +38,21 @@
 <text x="24" y="762" fill="#c9d1d9">test_retries_keep_reports_until_confirmed </text>
 <text x="24" y="784" fill="#c9d1d9">(test_sync.OutboxTests.test_retries_keep_reports_until_confirmed) ... ok</text>
 <text x="24" y="806" fill="#c9d1d9">----------------------------------------------------------------------</text>
-<text x="24" y="828" fill="#c9d1d9">Ran 6 tests in 0.144s</text>
+<text x="24" y="828" fill="#c9d1d9">Ran 6 tests in 0.086s</text>
 <text x="24" y="850" fill="#c9d1d9">Full output: evidence.json</text>
 <text x="24" y="872" fill="#c9d1d9"></text>
 <text x="24" y="894" fill="#3fb950">PASS Run real Request/Response adapter and enforce input limits</text>
 <text x="24" y="916" fill="#79c0ff">$ node .proof/demo.mjs</text>
 <text x="24" y="938" fill="#c9d1d9">{&quot;accepted&quot;:{&quot;method&quot;:&quot;POST&quot;,&quot;body&quot;:{&quot;status&quot;:&quot;passed&quot;},&quot;query&quot;:{&quot;project&quot;:&quot;proof&quot;}},&quot;status&quot;:201,&quot;duplica</text>
 <text x="24" y="960" fill="#c9d1d9">te_query&quot;:400,&quot;oversized_body&quot;:413}</text>
+<text x="24" y="982" fill="#c9d1d9"></text>
+<text x="24" y="1004" fill="#3fb950">PASS Ruby delivery receipt and retry regression tests</text>
+<text x="24" y="1026" fill="#79c0ff">$ ruby cloud/test_outbox.rb</text>
+<text x="24" y="1048" fill="#c9d1d9">Ruby outbox checks passed</text>
+<text x="24" y="1070" fill="#c9d1d9"></text>
+<text x="24" y="1092" fill="#3fb950">PASS Persist Ruby outbox, recover after restart and reject corrupt records</text>
+<text x="24" y="1114" fill="#79c0ff">$ ruby .proof/ruby-demo.rb</text>
+<text x="24" y="1136" fill="#c9d1d9">{&quot;recovered&quot;:{&quot;pending&quot;:1,&quot;delivered&quot;:0,&quot;failedAttempts&quot;:0},&quot;idempotent_replay&quot;:true,&quot;capacity_rejected&quot;:t</text>
+<text x="24" y="1158" fill="#c9d1d9">rue,&quot;corrupt_record_rejected&quot;:true,&quot;network_requests&quot;:0}</text>
 </g>
 </svg>
