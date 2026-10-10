@@ -58,6 +58,7 @@ module BrunnoDev
     end
 
     def drain(endpoint:, token:, limit: 100, transport: nil, now: Time.now.to_f)
+      raise ArgumentError, 'finite nonnegative time required' unless (now.is_a?(Integer) || now.is_a?(Float)) && now.finite? && now >= 0
       uri = URI.parse(endpoint)
       raise ArgumentError, 'HTTPS endpoint without credentials or fragment required' unless uri.is_a?(URI::HTTPS) && uri.host && !uri.userinfo && !uri.fragment && !uri.query
       raise ArgumentError, 'invalid session token' unless token.is_a?(String) && /\A[A-Za-z0-9_.-]{1,8192}\z/.match?(token)
@@ -102,7 +103,10 @@ module BrunnoDev
 
     def read(path)
       raise IOError, 'symlink record rejected' if File.symlink?(path)
-      JSON.parse(File.binread(path, 524_289)).tap { |item| raise IOError, 'invalid record' unless item.is_a?(Hash) }
+      raise IOError, 'record exceeds size limit' if File.size(path) > 524_288
+      JSON.parse(File.binread(path, 524_289)).tap do |item|
+        raise IOError, 'invalid record' unless item.is_a?(Hash) && item['payload'].is_a?(Hash) && item['attempts'].is_a?(Integer) && item['attempts'] >= 0 && (item['nextAt'].is_a?(Integer) || item['nextAt'].is_a?(Float)) && item['nextAt'].finite? && item['nextAt'] >= 0 && (item['receipt'].nil? || item['receipt'].is_a?(Hash))
+      end
     end
 
     def write(path, item)
@@ -177,9 +181,12 @@ if $PROGRAM_NAME == __FILE__
       raise ArgumentError, 'report too large' if data.bytesize > 196_608
       puts JSON.generate({ 'clientKey' => outbox.enqueue(project: project, result: JSON.parse(data)) })
     when 'sync'
+      raise ArgumentError, 'usage: sync' unless ARGV.empty?
       endpoint = ENV.fetch('BRUNNODEV_API_URL').sub(%r{/\z}, '') + '/api/runs'
       puts JSON.generate({ 'delivered' => outbox.drain(endpoint: endpoint, token: ENV.fetch('BRUNNODEV_ACCESS_TOKEN')), 'status' => outbox.status })
-    when 'status' then puts JSON.generate(outbox.status)
+    when 'status'
+      raise ArgumentError, 'usage: status' unless ARGV.empty?
+      puts JSON.generate(outbox.status)
     else raise ArgumentError, 'usage: outbox.rb enqueue PROJECT FILE.json | sync | status'
     end
   rescue StandardError => error

@@ -2,7 +2,9 @@
   "repository": "brunnojob/vercel-home-telemetry-api",
   "inputs": [
     ".proof/scenarios.json",
-    ".proof/demo.mjs"
+    ".proof/demo.mjs",
+    "cloud/outbox.rb",
+    ".proof/ruby-demo.rb"
   ],
   "cases": [
     {
@@ -67,6 +69,27 @@
         "\"oversized_body\":413"
       ],
       "timeout": 120
+    },
+    {
+      "name": "Ruby delivery receipt and retry regression tests",
+      "argv": [
+        "ruby",
+        "cloud/test_outbox.rb"
+      ],
+      "contains": [
+        "Ruby outbox checks passed"
+      ]
+    },
+    {
+      "name": "Persist Ruby outbox, recover after restart and reject corrupt records",
+      "argv": [
+        "ruby",
+        ".proof/ruby-demo.rb"
+      ],
+      "contains": [
+        "\"idempotent_replay\":true",
+        "\"corrupt_record_rejected\":true"
+      ]
     }
   ]
 }
