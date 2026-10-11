@@ -1,5 +1,7 @@
 # Operations Archive
 
+[View execution evidence](https://brunnojob.github.io/devstart-lab/proofs/vercel-home-telemetry-api/)
+
 An API and interface for storing execution results, telemetry, inspections, and work orders. It uses PostgreSQL on Supabase, per-user authentication, and compatible serverless hosting Functions.
 
 ## Run
